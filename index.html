@@ -1,97 +1,157 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Kalkulator Umur</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      height: 100vh;
-      background-image: url("kucing.jpg");
-      background-size: cover;
-      background-position: center;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+<meta charset="UTF-8">
+<title>Kalkulator Usia</title>
 
-    .card {
-      background: rgba(255, 255, 255, 0.9);
-      padding: 25px;
-      border-radius: 12px;
-      width: 320px;
-      text-align: center;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    }
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  height: 100vh;
+  background-image: url("kucing.jpg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-    h2, p {
-      color: #000;
-    }
+.card {
+  background: rgba(255,255,255,0.9);
+  padding: 25px;
+  border-radius: 12px;
+  width: 360px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
 
-    input {
-      width: 100%;
-      padding: 8px;
-      margin-top: 10px;
-      font-size: 14px;
-    }
+h2 {
+  text-align: center;
+  color: #000;
+}
 
-    button {
-      margin-top: 15px;
-      padding: 10px;
-      width: 100%;
-      border: none;
-      border-radius: 6px;
-      background: #000;
-      color: #fff;
-      cursor: pointer;
-      font-size: 14px;
-    }
+label {
+  font-weight: bold;
+  color: #000;
+}
 
-    button:hover {
-      opacity: 0.85;
-    }
+.row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
 
-    #hasil {
-      margin-top: 15px;
-      font-weight: bold;
-    }
-  </style>
+select {
+  flex: 1;
+  padding: 8px;
+  font-size: 14px;
+}
+
+button {
+  margin-top: 15px;
+  width: 100%;
+  padding: 10px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#hasil {
+  margin-top: 15px;
+  font-weight: bold;
+  color: #000;
+}
+</style>
 </head>
+
 <body>
+<div class="card">
 
-  <div class="card">
-    <h2>Kalkulator Umur</h2>
-    <p>Masukkan tanggal lahir kamu</p>
+<h2>Kalkulator Usia</h2>
 
-    <input type="date" id="birthdate">
-    <button onclick="hitungUmur()">Hitung Umur</button>
+<label>Tanggal Lahir</label>
+<div class="row">
+  <select id="d1"><option>D/D</option></select>
+  <select id="m1"><option>M/M</option></select>
+  <select id="y1"><option>Y/Y</option></select>
+</div>
 
-    <p id="hasil"></p>
-  </div>
+<label style="margin-top:10px;display:block;">Usia pada tanggal yang ditargetkan</label>
+<div class="row">
+  <select id="d2"></select>
+  <select id="m2"></select>
+  <select id="y2"></select>
+</div>
 
-  <script>
-    function hitungUmur() {
-      const input = document.getElementById("birthdate").value;
-      if (!input) {
-        document.getElementById("hasil").innerText = "Tanggal lahir belum diisi!";
-        return;
-      }
+<button onclick="hitungUsia()">Hitung Usia</button>
 
-      const lahir = new Date(input);
-      const hariIni = new Date();
+<div id="hasil"></div>
 
-      let umur = hariIni.getFullYear() - lahir.getFullYear();
-      const bulan = hariIni.getMonth() - lahir.getMonth();
+</div>
 
-      if (bulan < 0 || (bulan === 0 && hariIni.getDate() < lahir.getDate())) {
-        umur--;
-      }
+<script>
+const now = new Date();
+const tahunSekarang = now.getFullYear();
 
-      document.getElementById("hasil").innerText =
-        "Umur kamu sekarang: " + umur + " tahun";
-    }
-  </script>
+// Isi dropdown
+function isiSelect(id, start, end, placeholder=false) {
+  const el = document.getElementById(id);
+  if (!placeholder) el.innerHTML = "";
+  for (let i = start; i <= end; i++) {
+    el.innerHTML += `<option value="${i}">${i}</option>`;
+  }
+}
+
+// Tanggal lahir
+isiSelect("d1", 1, 31, true);
+isiSelect("m1", 1, 12, true);
+isiSelect("y1", 1950, tahunSekarang, true);
+
+// Target tanggal (auto hari ini)
+isiSelect("d2", 1, 31);
+isiSelect("m2", 1, 12);
+isiSelect("y2", 1950, tahunSekarang);
+
+document.getElementById("d2").value = now.getDate();
+document.getElementById("m2").value = now.getMonth() + 1;
+document.getElementById("y2").value = tahunSekarang;
+
+function hitungUsia() {
+  const d1 = document.getElementById("d1").value;
+  const m1 = document.getElementById("m1").value;
+  const y1 = document.getElementById("y1").value;
+
+  if (isNaN(d1) || isNaN(m1) || isNaN(y1)) {
+    document.getElementById("hasil").innerText = "Lengkapi tanggal lahir!";
+    return;
+  }
+
+  const lahir = new Date(y1, m1 - 1, d1);
+  const target = new Date(
+    document.getElementById("y2").value,
+    document.getElementById("m2").value - 1,
+    document.getElementById("d2").value
+  );
+
+  const diffMs = target - lahir;
+  if (diffMs < 0) {
+    document.getElementById("hasil").innerText = "Tanggal target lebih awal dari lahir!";
+    return;
+  }
+
+  const tahun = Math.floor(diffMs / (1000 * 60 * 60 * 24 * 365));
+  const hari = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const jam = Math.floor(diffMs / (1000 * 60 * 60));
+
+  document.getElementById("hasil").innerHTML =
+    `Usia kamu:<br>
+     ${tahun} tahun<br>
+     ${hari} hari<br>
+     ${jam} jam`;
+}
+</script>
 
 </body>
 </html>
