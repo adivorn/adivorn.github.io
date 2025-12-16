@@ -1,105 +1,3 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
-<title>Kalkulator Usia</title>
-
-<style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  height: 100vh;
-  background-image: url("kucing.jpg");
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.card {
-  background: rgba(255,255,255,0.92);
-  padding: 28px;
-  border-radius: 14px;
-  width: 390px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-}
-
-h2 {
-  text-align: center;
-  color: #000;
-  font-size: 22px;
-}
-
-label {
-  font-weight: bold;
-  color: #000;
-  margin-top: 10px;
-  display: block;
-}
-
-.row {
-  display: flex;
-  gap: 8px;
-  margin-top: 6px;
-}
-
-select {
-  flex: 1;
-  padding: 9px;
-  font-size: 15px;
-}
-
-button {
-  margin-top: 18px;
-  width: 100%;
-  padding: 12px;
-  background: #000;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 15px;
-}
-
-#hasil {
-  margin-top: 18px;
-  color: #000;
-  font-size: 15px;
-}
-
-.big {
-  font-size: 18px;
-  font-weight: bold;
-}
-</style>
-</head>
-
-<body>
-<div class="card">
-
-<h2>Kalkulator Usia</h2>
-
-<label>Tanggal Lahir</label>
-<div class="row">
-  <select id="d1"><option>D/D</option></select>
-  <select id="m1"><option>M/M</option></select>
-  <select id="y1"><option>Y/Y</option></select>
-</div>
-
-<label>Usia pada tanggal yang ditargetkan</label>
-<div class="row">
-  <select id="d2"></select>
-  <select id="m2"></select>
-  <select id="y2"></select>
-</div>
-
-<button onclick="hitungUsia()">Hitung Usia</button>
-
-<div id="hasil"></div>
-
-</div>
-
 <script>
 const now = new Date();
 const tahunSekarang = now.getFullYear();
@@ -122,30 +20,39 @@ isi("d2",1,31);
 isi("m2",1,12);
 isi("y2",1950,tahunSekarang);
 
-d2.value = now.getDate();
-m2.value = now.getMonth()+1;
-y2.value = tahunSekarang;
+document.getElementById("d2").value = now.getDate();
+document.getElementById("m2").value = now.getMonth() + 1;
+document.getElementById("y2").value = tahunSekarang;
 
 function hitungUsia() {
-  const d1 = d1 = document.getElementById("d1").value;
-  const m1 = document.getElementById("m1").value;
-  const y1 = document.getElementById("y1").value;
+  const d1 = Number(document.getElementById("d1").value);
+  const m1 = Number(document.getElementById("m1").value);
+  const y1 = Number(document.getElementById("y1").value);
 
-  if (isNaN(d1) || isNaN(m1) || isNaN(y1)) {
-    hasil.innerText = "Lengkapi tanggal lahir!";
+  if (!d1 || !m1 || !y1) {
+    document.getElementById("hasil").innerText = "Lengkapi tanggal lahir!";
     return;
   }
 
-  const lahir = new Date(y1, m1-1, d1);
-  const target = new Date(y2.value, m2.value-1, d2.value);
+  const d2 = Number(document.getElementById("d2").value);
+  const m2 = Number(document.getElementById("m2").value);
+  const y2 = Number(document.getElementById("y2").value);
 
-  let tahun = target.getFullYear() - lahir.getFullYear();
-  let bulan = target.getMonth() - lahir.getMonth();
-  let hari = target.getDate() - lahir.getDate();
+  const lahir = new Date(y1, m1 - 1, d1);
+  const target = new Date(y2, m2 - 1, d2);
+
+  if (target < lahir) {
+    document.getElementById("hasil").innerText = "Tanggal target lebih awal dari lahir!";
+    return;
+  }
+
+  let tahun = y2 - y1;
+  let bulan = m2 - m1;
+  let hari = d2 - d1;
 
   if (hari < 0) {
     bulan--;
-    hari += new Date(target.getFullYear(), target.getMonth(), 0).getDate();
+    hari += new Date(y2, m2 - 1, 0).getDate();
   }
   if (bulan < 0) {
     tahun--;
@@ -153,12 +60,12 @@ function hitungUsia() {
   }
 
   const diffMs = target - lahir;
-  const totalHari = Math.floor(diffMs / (1000*60*60*24));
-  const totalJam = Math.floor(diffMs / (1000*60*60));
+  const totalHari = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const totalJam = Math.floor(diffMs / (1000 * 60 * 60));
   const totalMinggu = Math.floor(totalHari / 7);
   const totalBulan = tahun * 12 + bulan;
 
-  hasil.innerHTML = `
+  document.getElementById("hasil").innerHTML = `
     <div class="big">${tahun} tahun ${bulan} bulan ${hari} hari</div><br>
     kamu telah hidup:<br>
     dalam tahun: ${tahun}<br>
@@ -169,6 +76,3 @@ function hitungUsia() {
   `;
 }
 </script>
-
-</body>
-</html>
