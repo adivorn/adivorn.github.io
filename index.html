@@ -1,8 +1,106 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Kalkulator Usia</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  background-image: url("kucing.jpg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card {
+  background: rgba(255,255,255,0.95);
+  padding: 28px;
+  border-radius: 14px;
+  width: 380px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+label {
+  font-weight: bold;
+  display: block;
+  margin-top: 10px;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+select {
+  flex: 1;
+  padding: 8px;
+  font-size: 14px;
+}
+
+button {
+  margin-top: 18px;
+  width: 100%;
+  padding: 12px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+#hasil {
+  margin-top: 18px;
+  font-size: 15px;
+}
+
+.big {
+  font-size: 18px;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+<div class="card">
+
+<h2>Kalkulator Usia</h2>
+
+<label>Tanggal Lahir</label>
+<div class="row">
+  <select id="d1"><option>D/D</option></select>
+  <select id="m1"><option>M/M</option></select>
+  <select id="y1"><option>Y/Y</option></select>
+</div>
+
+<label>Usia pada tanggal yang ditargetkan</label>
+<div class="row">
+  <select id="d2"></select>
+  <select id="m2"></select>
+  <select id="y2"></select>
+</div>
+
+<button onclick="hitung()">Hitung Usia</button>
+
+<div id="hasil"></div>
+
+</div>
+
 <script>
 const now = new Date();
-const tahunSekarang = now.getFullYear();
+const yearNow = now.getFullYear();
 
-function isi(id, start, end, placeholder=false) {
+function fill(id, start, end, placeholder=false) {
   const el = document.getElementById(id);
   if (!placeholder) el.innerHTML = "";
   for (let i = start; i <= end; i++) {
@@ -11,26 +109,26 @@ function isi(id, start, end, placeholder=false) {
 }
 
 // tanggal lahir
-isi("d1",1,31,true);
-isi("m1",1,12,true);
-isi("y1",1950,tahunSekarang,true);
+fill("d1",1,31,true);
+fill("m1",1,12,true);
+fill("y1",1950,yearNow,true);
 
-// target otomatis hari ini
-isi("d2",1,31);
-isi("m2",1,12);
-isi("y2",1950,tahunSekarang);
+// target default hari ini
+fill("d2",1,31);
+fill("m2",1,12);
+fill("y2",1950,yearNow);
 
-document.getElementById("d2").value = now.getDate();
-document.getElementById("m2").value = now.getMonth() + 1;
-document.getElementById("y2").value = tahunSekarang;
+d2.value = now.getDate();
+m2.value = now.getMonth() + 1;
+y2.value = yearNow;
 
-function hitungUsia() {
+function hitung() {
   const d1 = Number(document.getElementById("d1").value);
   const m1 = Number(document.getElementById("m1").value);
   const y1 = Number(document.getElementById("y1").value);
 
   if (!d1 || !m1 || !y1) {
-    document.getElementById("hasil").innerText = "Lengkapi tanggal lahir!";
+    hasil.innerText = "Lengkapi tanggal lahir!";
     return;
   }
 
@@ -38,41 +136,44 @@ function hitungUsia() {
   const m2 = Number(document.getElementById("m2").value);
   const y2 = Number(document.getElementById("y2").value);
 
-  const lahir = new Date(y1, m1 - 1, d1);
+  const birth = new Date(y1, m1 - 1, d1);
   const target = new Date(y2, m2 - 1, d2);
 
-  if (target < lahir) {
-    document.getElementById("hasil").innerText = "Tanggal target lebih awal dari lahir!";
+  if (target < birth) {
+    hasil.innerText = "Tanggal target tidak valid!";
     return;
   }
 
-  let tahun = y2 - y1;
-  let bulan = m2 - m1;
-  let hari = d2 - d1;
+  let years = y2 - y1;
+  let months = m2 - m1;
+  let days = d2 - d1;
 
-  if (hari < 0) {
-    bulan--;
-    hari += new Date(y2, m2 - 1, 0).getDate();
+  if (days < 0) {
+    months--;
+    days += new Date(y2, m2 - 1, 0).getDate();
   }
-  if (bulan < 0) {
-    tahun--;
-    bulan += 12;
+  if (months < 0) {
+    years--;
+    months += 12;
   }
 
-  const diffMs = target - lahir;
-  const totalHari = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  const totalJam = Math.floor(diffMs / (1000 * 60 * 60));
-  const totalMinggu = Math.floor(totalHari / 7);
-  const totalBulan = tahun * 12 + bulan;
+  const diffMs = target - birth;
+  const totalDays = Math.floor(diffMs / (1000*60*60*24));
+  const totalHours = Math.floor(diffMs / (1000*60*60));
+  const totalWeeks = Math.floor(totalDays / 7);
+  const totalMonths = years * 12 + months;
 
-  document.getElementById("hasil").innerHTML = `
-    <div class="big">${tahun} tahun ${bulan} bulan ${hari} hari</div><br>
+  hasil.innerHTML = `
+    <div class="big">${years} tahun ${months} bulan ${days} hari</div><br>
     kamu telah hidup:<br>
-    dalam tahun: ${tahun}<br>
-    dalam bulan: ${totalBulan}<br>
-    dalam minggu: ${totalMinggu}<br>
-    dalam hari: ${totalHari}<br>
-    dalam jam: ${totalJam}
+    dalam tahun: ${years}<br>
+    dalam bulan: ${totalMonths}<br>
+    dalam minggu: ${totalWeeks}<br>
+    dalam hari: ${totalDays}<br>
+    dalam jam: ${totalHours}
   `;
 }
 </script>
+
+</body>
+</html>
