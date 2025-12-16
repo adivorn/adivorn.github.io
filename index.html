@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Kalkulator Umur</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      background-image: url("kucing.jpg");
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 25px;
+      border-radius: 12px;
+      width: 320px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    h2, p {
+      color: #000;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px;
+      width: 100%;
+      border: none;
+      border-radius: 6px;
+      background: #000;
+      color: #fff;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      opacity: 0.85;
+    }
+
+    #hasil {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>Kalkulator Umur</h2>
+    <p>Masukkan tanggal lahir kamu</p>
+
+    <input type="date" id="birthdate">
+    <button onclick="hitungUmur()">Hitung Umur</button>
+
+    <p id="hasil"></p>
+  </div>
+
+  <script>
+    function hitungUmur() {
+      const input = document.getElementById("birthdate").value;
+      if (!input) {
+        document.getElementById("hasil").innerText = "Tanggal lahir belum diisi!";
+        return;
+      }
+
+      const lahir = new Date(input);
+      const hariIni = new Date();
+
+      let umur = hariIni.getFullYear() - lahir.getFullYear();
+      const bulan = hariIni.getMonth() - lahir.getMonth();
+
+      if (bulan < 0 || (bulan === 0 && hariIni.getDate() < lahir.getDate())) {
+        umur--;
+      }
+
+      document.getElementById("hasil").innerText =
+        "Umur kamu sekarang: " + umur + " tahun";
+    }
+  </script>
+
+</body>
+</html>
